@@ -157,104 +157,104 @@ export default function HomeScreen() {
   const [sourcePlaces, setSourcePlaces] = useState([]);
 
   // Mock fares for each provider with prices in rupees
-  const mockFares = {
-    uber: [
-      { 
-        id: "uber-1", 
-        service: "UberGo", 
-        rideType: "Affordable rides", 
-        fare: "₹149 - ₹175", 
-        eta: "5 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.UBER_COLOR
-      },
-      { 
-        id: "uber-2", 
-        service: "Premier", 
-        rideType: "Comfortable rides", 
-        fare: "₹225 - ₹250", 
-        eta: "7 min",
-        icon: "car-side",
-        capacity: "4",
-        color: Colors.UBER_COLOR
-      },
-      { 
-        id: "uber-3", 
-        service: "UberXL", 
-        rideType: "Premium rides", 
-        fare: "₹325 - ₹375", 
-        eta: "8 min",
-        icon: "caravan",
-        capacity: "6",
-        color: Colors.UBER_COLOR
-      },
-    ],
-    ola: [
-      { 
-        id: "ola-1", 
-        service: "Mini", 
-        rideType: "Economic rides", 
-        fare: "₹145 - ₹170", 
-        eta: "4 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.OLA_COLOR
-      },
-      { 
-        id: "ola-2", 
-        service: "Sedan", 
-        rideType: "Comfort rides", 
-        fare: "₹210 - ₹240", 
-        eta: "6 min",
-        icon: "car-sport",
-        capacity: "4",
-        color: Colors.OLA_COLOR
-      },
-      { 
-        id: "ola-3", 
-        service: "Prime SUV", 
-        rideType: "Premium rides", 
-        fare: "₹320 - ₹360", 
-        eta: "7 min",
-        icon: "car-estate",
-        capacity: "6",
-        color: Colors.OLA_COLOR
-      },
-    ],
-    rapido: [
-      { 
-        id: "rapido-1", 
-        service: "Bike", 
-        rideType: "Quick rides", 
-        fare: "₹65 - ₹85", 
-        eta: "3 min",
-        icon: "motorcycle",
-        capacity: "1",
-        color: Colors.RAPIDO_COLOR
-      },
-      { 
-        id: "rapido-2", 
-        service: "Auto", 
-        rideType: "3-wheeler", 
-        fare: "₹120 - ₹145", 
-        eta: "5 min",
-        icon: "car-sport",
-        capacity: "3",
-        color: Colors.RAPIDO_COLOR
-      },
-      { 
-        id: "rapido-3", 
-        service: "Cab", 
-        rideType: "Comfortable rides", 
-        fare: "₹185 - ₹230", 
-        eta: "7 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.RAPIDO_COLOR
-      },
-    ]
-  };
+  // const mockFares = {
+  //   uber: [
+  //     { 
+  //       id: "uber-1", 
+  //       service: "UberGo", 
+  //       rideType: "Affordable rides", 
+  //       fare: "₹149 - ₹175", 
+  //       eta: "5 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //     { 
+  //       id: "uber-2", 
+  //       service: "Premier", 
+  //       rideType: "Comfortable rides", 
+  //       fare: "₹225 - ₹250", 
+  //       eta: "7 min",
+  //       icon: "car-side",
+  //       capacity: "4",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //     { 
+  //       id: "uber-3", 
+  //       service: "UberXL", 
+  //       rideType: "Premium rides", 
+  //       fare: "₹325 - ₹375", 
+  //       eta: "8 min",
+  //       icon: "caravan",
+  //       capacity: "6",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //   ],
+  //   ola: [
+  //     { 
+  //       id: "ola-1", 
+  //       service: "Mini", 
+  //       rideType: "Economic rides", 
+  //       fare: "₹145 - ₹170", 
+  //       eta: "4 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //     { 
+  //       id: "ola-2", 
+  //       service: "Sedan", 
+  //       rideType: "Comfort rides", 
+  //       fare: "₹210 - ₹240", 
+  //       eta: "6 min",
+  //       icon: "car-sport",
+  //       capacity: "4",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //     { 
+  //       id: "ola-3", 
+  //       service: "Prime SUV", 
+  //       rideType: "Premium rides", 
+  //       fare: "₹320 - ₹360", 
+  //       eta: "7 min",
+  //       icon: "car-estate",
+  //       capacity: "6",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //   ],
+  //   rapido: [
+  //     { 
+  //       id: "rapido-1", 
+  //       service: "Bike", 
+  //       rideType: "Quick rides", 
+  //       fare: "₹65 - ₹85", 
+  //       eta: "3 min",
+  //       icon: "motorcycle",
+  //       capacity: "1",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //     { 
+  //       id: "rapido-2", 
+  //       service: "Auto", 
+  //       rideType: "3-wheeler", 
+  //       fare: "₹120 - ₹145", 
+  //       eta: "5 min",
+  //       icon: "car-sport",
+  //       capacity: "3",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //     { 
+  //       id: "rapido-3", 
+  //       service: "Cab", 
+  //       rideType: "Comfortable rides", 
+  //       fare: "₹185 - ₹230", 
+  //       eta: "7 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //   ]
+  // };
 
   // Get user's current location
   useEffect(() => {
@@ -305,7 +305,9 @@ export default function HomeScreen() {
   useEffect(() => {
     if (showFares) {
       // Set the first fare as selected by default
-      setSelectedFare(mockFares[selectedProvider][0]);
+      if (fares) {
+        setSelectedFare(fares[selectedProvider][0]);
+      }      
     }
   }, [showFares, selectedProvider]);
 
@@ -332,7 +334,18 @@ export default function HomeScreen() {
     setDestination(place.description);
     setPlaces([]);
   };
-
+  const [fares, setFares] = useState(null);
+  const handleFindFares = () => {
+    if (!pickupLocation || !dropLocation) {
+      console.log("Please select both a pickup and drop location");
+      return;
+    }
+    const calculatedFares = calculateFareEstimates(pickupLocation, dropLocation);
+    setFares(calculatedFares);
+    setSelectedFare(calculatedFares[selectedProvider][0]);
+    setShowFares(true);
+  };
+  
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.SECONDARY} />
@@ -492,11 +505,12 @@ export default function HomeScreen() {
           {destination && !places.length && !sourcePlaces.length && (
             <TouchableOpacity 
               style={styles.submitButton} 
-              onPress={() => setShowFares(true)}
+              onPress={handleFindFares}
             >
               <Text style={styles.submitText}>Find Rides</Text>
             </TouchableOpacity>
-          )}
+                )}
+
         </View>
       )}
       
@@ -568,7 +582,7 @@ export default function HomeScreen() {
           {/* Rides Carousel */}
           <View style={styles.faresCarouselContainer}>
             <Animated.FlatList
-              data={mockFares[selectedProvider]}
+              data={fares ? fares[selectedProvider] : []}
               keyExtractor={(item) => item.id}
               horizontal
               pagingEnabled

@@ -8,7 +8,7 @@ import axios from "axios";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
-// Custom colors for a professional look
+
 const Colors = {
   PRIMARY: "#000000",
   SECONDARY: "#FFFFFF",

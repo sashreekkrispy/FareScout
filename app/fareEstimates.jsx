@@ -12,6 +12,8 @@ export default function FareEstimatesScreen({ route }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Example:
+
   useEffect(() => {
     try {
       // Calculate fares locally.

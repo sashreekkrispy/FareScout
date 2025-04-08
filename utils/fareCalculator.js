@@ -80,25 +80,34 @@ const baseRates = {
     const surgeFactor = getSurgeFactor(currentTime, demandFactor);
   
     // Generate estimates for each service.
-    const priceEstimates = Object.entries(baseRates).map(([serviceName, rates]) => {
+    const priceEstimates = Object.entries(baseRates).reduce((acc, [serviceName, rates]) => {
       let fare = rates.baseFare + distanceKm * rates.perKm + estimatedMinutes * rates.perMinute;
       fare = fare * surgeFactor;
       fare = Math.max(fare, rates.minimumFare);
       const roundedFare = Math.round(fare);
       const minFare = Math.round(roundedFare * 0.9);
       const maxFare = Math.round(roundedFare * 1.1);
-  
-      return {
+    
+      // Determine provider key based on serviceName (force lowercase for consistency)
+      // Adjust this logic as needed; here we're assuming services with "Uber" go to "uber", otherwise "ola".
+      const providerKey = serviceName.toLowerCase().includes("uber") ? "uber" : "ola";
+    
+      const estimate = {
         service: serviceName,
-        provider: serviceName.includes("Uber") ? "Uber" : "Ola",
+        provider: providerKey,
         estimatedFare: roundedFare,
         fareRange: `₹${minFare} - ₹${maxFare}`,
         distance: Math.round(distanceKm * 10) / 10,
         duration: Math.round(estimatedMinutes),
         surgeMultiplier: surgeFactor,
       };
-    });
-  
+    
+      if (!acc[providerKey]) {
+        acc[providerKey] = [];
+      }
+      acc[providerKey].push(estimate);
+      return acc;
+    }, {});
+    
     return priceEstimates;
-  }
-  
+  }    

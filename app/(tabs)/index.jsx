@@ -7,6 +7,8 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import axios from "axios";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { calculateFareEstimates } from "../utils/fareCalculator";
+
 
 
 const Colors = {

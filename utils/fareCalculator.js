@@ -78,8 +78,11 @@ const baseRates = {
     );
     const estimatedMinutes = estimateTravelTime(distanceKm);
     const surgeFactor = getSurgeFactor(currentTime, demandFactor);
-  
-    // Generate estimates for each service.
+    
+    // We'll use a counter to generate a unique id for each fare estimate.
+    let idCounter = 0;
+    
+    // Generate estimates for each service and group them by provider.
     const priceEstimates = Object.entries(baseRates).reduce((acc, [serviceName, rates]) => {
       let fare = rates.baseFare + distanceKm * rates.perKm + estimatedMinutes * rates.perMinute;
       fare = fare * surgeFactor;
@@ -88,11 +91,11 @@ const baseRates = {
       const minFare = Math.round(roundedFare * 0.9);
       const maxFare = Math.round(roundedFare * 1.1);
     
-      // Determine provider key based on serviceName (force lowercase for consistency)
-      // Adjust this logic as needed; here we're assuming services with "Uber" go to "uber", otherwise "ola".
+      // Determine provider key based on serviceName (using lowercase for consistency)
       const providerKey = serviceName.toLowerCase().includes("uber") ? "uber" : "ola";
     
       const estimate = {
+        id: `${serviceName}-${idCounter++}`, // Unique id, e.g. "Uber Go-0"
         service: serviceName,
         provider: providerKey,
         estimatedFare: roundedFare,
@@ -110,4 +113,5 @@ const baseRates = {
     }, {});
     
     return priceEstimates;
-  }    
+  }
+  

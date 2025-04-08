@@ -7,7 +7,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import axios from "axios";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import { calculateFareEstimates } from "../utils/fareCalculator";
+import { calculateFareEstimates } from "../../utils/fareCalculator";
 
 
 
@@ -136,12 +136,12 @@ const providers = [
     color: Colors.OLA_COLOR,
     icon: "taxi",
   },
-  {
-    id: "rapido",
-    name: "Rapido",
-    color: Colors.RAPIDO_COLOR,
-    icon: "motorcycle",
-  }
+  // {
+  //   id: "rapido",
+  //   name: "Rapido",
+  //   color: Colors.RAPIDO_COLOR,
+  //   icon: "motorcycle",
+  // }
 ];
 
 export default function HomeScreen() {
@@ -281,6 +281,26 @@ export default function HomeScreen() {
 
   const [pickupLocation, setPickupLocation] = useState(null);
   const [dropLocation, setDropLocation] = useState(null);
+
+  const fetchPlaceDetails = async (placeId) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json`,
+        {
+          params: {
+            place_id: placeId,
+            key: process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY,
+            fields: "geometry", // Specify that you need geometry data
+          },
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log("Error fetching place details:", error);
+      return null;
+    }
+  };
+  
   
   // Example: If you want to use current location as pickup
   useEffect(() => {
@@ -378,18 +398,22 @@ export default function HomeScreen() {
     setIsSourceSearch(false);
   };
 
-  const handleDestinationSelection = (place) => {
+  const handleDestinationSelection = async (place) => {
     setDestination(place.description);
-    // If you can get coordinates, set them here:
-    if (place.geometry && place.geometry.location) {
-      // Example structure; adjust according to the API response:
-      setDropLocation({
-        lat: place.geometry.location.lat,
-        lng: place.geometry.location.lng,
-      });
-    }
     setPlaces([]);
+    
+    // Fetch detailed place data using the place_id
+    const details = await fetchPlaceDetails(place.place_id);
+    if (details && details.geometry && details.geometry.location) {
+      setDropLocation({
+        lat: details.geometry.location.lat,
+        lng: details.geometry.location.lng,
+      });
+    } else {
+      console.log("Could not fetch coordinates for the selected destination.");
+    }
   };
+  
  
   return (
     <View style={styles.container}>
@@ -625,56 +649,60 @@ export default function HomeScreen() {
           </View>
           
           {/* Rides Carousel */}
-          <View style={styles.faresCarouselContainer}>
-            <Animated.FlatList
-              data={fares ? fares[selectedProvider] : []}
-              keyExtractor={(item) => item.id}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={CARD_WIDTH + 20}
-              snapToAlignment="center"
-              contentContainerStyle={styles.faresCarouselContent}
-              decelerationRate="fast"
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                { useNativeDriver: true }
-              )}
-              scrollEventThrottle={16}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.fareCard,
-                    selectedFare && selectedFare.id === item.id && {
-                      borderColor: item.color,
-                      borderWidth: 2,
-                    }
-                  ]}
-                  onPress={() => handleFareSelection(item)}
-                >
-                  <View style={styles.fareCardContent}>
-                    <View style={styles.fareCardLeft}>
-                      <View style={[
-                        styles.fareIconContainer,
-                        {backgroundColor: `${item.color}20`}
-                      ]}>
-                        <FontAwesome5 name={item.icon} size={24} color={item.color} />
-                      </View>
-                      <View style={styles.fareDetails}>
-                        <Text style={styles.fareService}>{item.service}</Text>
-                        <Text style={styles.fareType}>{item.rideType}</Text>
-                        <Text style={styles.fareEta}>{item.eta}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.farePrice}>
-                      <Text style={styles.farePriceText}>{item.fare}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+{/* Rides Carousel */}
+<View style={styles.faresCarouselContainer}>
+  <Animated.FlatList
+    data={fares ? fares[selectedProvider] : []}
+    keyExtractor={(item, index) => `${item.id}-${index}`}
+    horizontal
+    pagingEnabled
+    showsHorizontalScrollIndicator={false}
+    snapToInterval={CARD_WIDTH + 20}
+    snapToAlignment="center"
+    contentContainerStyle={styles.faresCarouselContent}
+    decelerationRate="fast"
+    onScroll={Animated.event(
+      [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+      { useNativeDriver: true }
+    )}
+    scrollEventThrottle={16}
+    renderItem={({ item }) => (
+      <TouchableOpacity
+        style={[
+          styles.fareCard,
+          selectedFare && selectedFare.id === item.id && {
+            borderColor: item.color,
+            borderWidth: 2,
+          },
+        ]}
+        onPress={() => handleFareSelection(item)}
+      >
+        <View style={styles.fareCardContent}>
+          <View style={styles.fareCardLeft}>
+            <View
+              style={[
+                styles.fareIconContainer,
+                { backgroundColor: `${item.color}20` },
+              ]}
+            >
+              <FontAwesome5 name={item.icon} size={24} color={item.color} />
+            </View>
+            <View style={styles.fareDetails}>
+              <Text style={styles.fareService}>{item.service}</Text>
+              <Text style={styles.fareDetailsText}>
+                {`${item.duration} min • ${item.distance} km`}
+              </Text>
+            </View>
           </View>
-          
+          <View style={styles.farePrice}>
+            <Text style={styles.farePriceText}>{item.fareRange}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )}
+  />
+</View>
+
           {/* Book Ride Button */}
           <TouchableOpacity 
             style={[
@@ -1107,4 +1135,9 @@ const styles = StyleSheet.create({
     color: Colors.PRIMARY,
     marginHorizontal: 8,
   },
+  fareDetailsText: {
+    fontSize: 14,
+    color: Colors.GRAY,
+  },
+  
 });

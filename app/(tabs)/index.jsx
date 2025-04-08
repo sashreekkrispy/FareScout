@@ -257,6 +257,30 @@ export default function HomeScreen() {
   // };
 
   // Get user's current location
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.log("Permission denied");
+  //       return;
+  //     }
+
+  //     let userLocation = await Location.getCurrentPositionAsync({});
+  //     setLocation(userLocation.coords);
+  //     setSource("Your Location"); // Default source is user's location
+  //     setRegion({
+  //       latitude: userLocation.coords.latitude,
+  //       longitude: userLocation.coords.longitude,
+  //       latitudeDelta: 0.05,
+  //       longitudeDelta: 0.05,
+  //     });
+  //   })();
+  // }, []);
+
+  const [pickupLocation, setPickupLocation] = useState(null);
+  const [dropLocation, setDropLocation] = useState(null);
+  
+  // Example: If you want to use current location as pickup
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -274,8 +298,15 @@ export default function HomeScreen() {
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       });
+      
+      // Optionally set the current location as the pickup location
+      setPickupLocation({
+        lat: userLocation.coords.latitude,
+        lng: userLocation.coords.longitude,
+      });
     })();
   }, []);
+
 
   // Fetch autocomplete places using Google API
   const fetchPlaces = async (input, isSourceField = false) => {
@@ -302,6 +333,18 @@ export default function HomeScreen() {
   };
 
   // Animation for cards
+  const [fares, setFares] = useState(null);
+  const handleFindFares = () => {
+    if (!pickupLocation || !dropLocation) {
+      console.log("Please select both a pickup and drop location");
+      return;
+    }
+    const calculatedFares = calculateFareEstimates(pickupLocation, dropLocation);
+    setFares(calculatedFares);
+    setSelectedFare(calculatedFares[selectedProvider][0]);
+    setShowFares(true);
+  };
+  
   useEffect(() => {
     if (showFares) {
       // Set the first fare as selected by default
@@ -321,9 +364,12 @@ export default function HomeScreen() {
 
   const switchProvider = (providerId) => {
     setSelectedProvider(providerId);
-    setSelectedFare(mockFares[providerId][0]);
+    // Use the fares state variable instead of calculatedFares
+    if (fares && fares[providerId]) {
+      setSelectedFare(fares[providerId][0]);
+    }
   };
-
+  
   const handleSourceSelection = (place) => {
     setSource(place.description);
     setSourcePlaces([]);
@@ -332,20 +378,17 @@ export default function HomeScreen() {
 
   const handleDestinationSelection = (place) => {
     setDestination(place.description);
+    // If you can get coordinates, set them here:
+    if (place.geometry && place.geometry.location) {
+      // Example structure; adjust according to the API response:
+      setDropLocation({
+        lat: place.geometry.location.lat,
+        lng: place.geometry.location.lng,
+      });
+    }
     setPlaces([]);
   };
-  const [fares, setFares] = useState(null);
-  const handleFindFares = () => {
-    if (!pickupLocation || !dropLocation) {
-      console.log("Please select both a pickup and drop location");
-      return;
-    }
-    const calculatedFares = calculateFareEstimates(pickupLocation, dropLocation);
-    setFares(calculatedFares);
-    setSelectedFare(calculatedFares[selectedProvider][0]);
-    setShowFares(true);
-  };
-  
+ 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.SECONDARY} />
@@ -354,7 +397,7 @@ export default function HomeScreen() {
       <MapView 
         style={styles.map} 
         region={region} 
-        provider={PROVIDER_GOOGLE}
+        //provider={PROVIDER_GOOGLE}
         customMapStyle={isBlackAndWhiteMap ? blackAndWhiteMapStyle : standardMapStyle}
       >
         {location && (

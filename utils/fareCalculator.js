@@ -26,7 +26,15 @@ const baseRates = {
       perMinute: 1.5,
       minimumFare: 100,
     },
-  };
+      "Rapido Bike": { 
+        baseFare: 30, 
+        perKm: 5, 
+        perMinute: 0.8, 
+        minimumFare: 40 },
+    
+    };
+    
+  
   
   // Helper function: Convert degrees to radians.
   function deg2rad(deg) {
@@ -79,10 +87,10 @@ const baseRates = {
     const estimatedMinutes = estimateTravelTime(distanceKm);
     const surgeFactor = getSurgeFactor(currentTime, demandFactor);
     
-    // We'll use a counter to generate a unique id for each fare estimate.
+    // Unique id counter for each fare estimate
     let idCounter = 0;
     
-    // Generate estimates for each service and group them by provider.
+    // Generate estimates for each service and group them by provider
     const priceEstimates = Object.entries(baseRates).reduce((acc, [serviceName, rates]) => {
       let fare = rates.baseFare + distanceKm * rates.perKm + estimatedMinutes * rates.perMinute;
       fare = fare * surgeFactor;
@@ -90,12 +98,19 @@ const baseRates = {
       const roundedFare = Math.round(fare);
       const minFare = Math.round(roundedFare * 0.9);
       const maxFare = Math.round(roundedFare * 1.1);
-    
-      // Determine provider key based on serviceName (using lowercase for consistency)
-      const providerKey = serviceName.toLowerCase().includes("uber") ? "uber" : "ola";
-    
+      
+      // Updated grouping logic to include Rapido:
+      let providerKey;
+      if (serviceName.toLowerCase().includes("rapido")) {
+        providerKey = "rapido";
+      } else if (serviceName.toLowerCase().includes("uber")) {
+        providerKey = "uber";
+      } else {
+        providerKey = "ola";
+      }
+      
       const estimate = {
-        id: `${serviceName}-${idCounter++}`, // Unique id, e.g. "Uber Go-0"
+        id: `${serviceName}-${idCounter++}`,  // Unique id
         service: serviceName,
         provider: providerKey,
         estimatedFare: roundedFare,
@@ -104,7 +119,7 @@ const baseRates = {
         duration: Math.round(estimatedMinutes),
         surgeMultiplier: surgeFactor,
       };
-    
+      
       if (!acc[providerKey]) {
         acc[providerKey] = [];
       }

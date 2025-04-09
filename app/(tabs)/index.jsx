@@ -136,12 +136,12 @@ const providers = [
     color: Colors.OLA_COLOR,
     icon: "taxi",
   },
-  // {
-  //   id: "rapido",
-  //   name: "Rapido",
-  //   color: Colors.RAPIDO_COLOR,
-  //   icon: "motorcycle",
-  // }
+  {
+    id: "rapido",
+    name: "Rapido",
+    color: Colors.RAPIDO_COLOR,
+    icon: "motorcycle",
+  }
 ];
 
 export default function HomeScreen() {

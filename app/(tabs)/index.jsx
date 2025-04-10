@@ -8,6 +8,8 @@ import axios from "axios";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { calculateFareEstimates } from "../../utils/fareCalculator";
+import { Linking } from 'react-native';
+
 
 
 
@@ -413,6 +415,34 @@ export default function HomeScreen() {
       console.log("Could not fetch coordinates for the selected destination.");
     }
   };
+  const handleBookRide = () => {
+    // Ensure that both pickupLocation and dropLocation are defined
+    if (!pickupLocation || !dropLocation) {
+      console.log("Missing pickup or drop location for booking ride");
+      return;
+    }
+    
+    let bookingUrl = "";
+    if (selectedProvider === "uber") {
+      // Example deep link for Uber; adjust parameters as needed
+      bookingUrl = `uber://?action=setPickup&pickup[latitude]=${pickupLocation.lat}&pickup[longitude]=${pickupLocation.lng}&dropoff[latitude]=${dropLocation.lat}&dropoff[longitude]=${dropLocation.lng}`;
+    } else if (selectedProvider === "ola") {
+      // Example deep link for Ola; the actual scheme might vary
+      bookingUrl = `ola://?pickup_lat=${pickupLocation.lat}&pickup_lng=${pickupLocation.lng}&drop_lat=${dropLocation.lat}&drop_lng=${dropLocation.lng}`;
+    } else if (selectedProvider === "rapido") {
+      // Example deep link for Rapido; update to the correct URL scheme if available
+      bookingUrl = `rapido://?pickup_lat=${pickupLocation.lat}&pickup_lng=${pickupLocation.lng}&drop_lat=${dropLocation.lat}&drop_lng=${dropLocation.lng}`;
+    }
+    
+    // Attempt to open the URL
+    if (bookingUrl) {
+      Linking.openURL(bookingUrl).catch((err) => {
+        console.error("Failed to open app: ", err);
+        // Optionally, show an alert or fallback behavior here.
+      });
+    }
+  };
+  
   
  
   return (
@@ -703,17 +733,21 @@ export default function HomeScreen() {
   />
 </View>
 
+
           {/* Book Ride Button */}
-          <TouchableOpacity 
-            style={[
-              styles.bookButton,
-              {backgroundColor: providers.find(p => p.id === selectedProvider).color}
-            ]}
-          >
-            <Text style={styles.bookButtonText}>
-              Book {selectedFare ? selectedFare.service : 'Ride'} with {providers.find(p => p.id === selectedProvider).name}
-            </Text>
-          </TouchableOpacity>
+          {/* Book Ride Button */}
+        <TouchableOpacity 
+          style={[
+            styles.bookButton,
+            { backgroundColor: providers.find(p => p.id === selectedProvider).color }
+          ]}
+          onPress={handleBookRide}  // Added onPress handler here.
+        >
+          <Text style={styles.bookButtonText}>
+            Book {selectedFare ? selectedFare.service : 'Ride'} with {providers.find(p => p.id === selectedProvider).name}
+          </Text>
+        </TouchableOpacity>
+
           
           {/* Payment Method Selection */}
           <View style={styles.paymentMethod}>

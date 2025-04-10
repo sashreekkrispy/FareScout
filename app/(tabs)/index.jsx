@@ -7,6 +7,10 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import axios from "axios";
 import * as Location from "expo-location";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { calculateFareEstimates } from "../../utils/fareCalculator";
+import { Linking } from 'react-native';
+
+
 
 
 const Colors = {
@@ -157,106 +161,150 @@ export default function HomeScreen() {
   const [sourcePlaces, setSourcePlaces] = useState([]);
 
   // Mock fares for each provider with prices in rupees
-  const mockFares = {
-    uber: [
-      { 
-        id: "uber-1", 
-        service: "UberGo", 
-        rideType: "Affordable rides", 
-        fare: "₹149 - ₹175", 
-        eta: "5 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.UBER_COLOR
-      },
-      { 
-        id: "uber-2", 
-        service: "Premier", 
-        rideType: "Comfortable rides", 
-        fare: "₹225 - ₹250", 
-        eta: "7 min",
-        icon: "car-side",
-        capacity: "4",
-        color: Colors.UBER_COLOR
-      },
-      { 
-        id: "uber-3", 
-        service: "UberXL", 
-        rideType: "Premium rides", 
-        fare: "₹325 - ₹375", 
-        eta: "8 min",
-        icon: "caravan",
-        capacity: "6",
-        color: Colors.UBER_COLOR
-      },
-    ],
-    ola: [
-      { 
-        id: "ola-1", 
-        service: "Mini", 
-        rideType: "Economic rides", 
-        fare: "₹145 - ₹170", 
-        eta: "4 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.OLA_COLOR
-      },
-      { 
-        id: "ola-2", 
-        service: "Sedan", 
-        rideType: "Comfort rides", 
-        fare: "₹210 - ₹240", 
-        eta: "6 min",
-        icon: "car-sport",
-        capacity: "4",
-        color: Colors.OLA_COLOR
-      },
-      { 
-        id: "ola-3", 
-        service: "Prime SUV", 
-        rideType: "Premium rides", 
-        fare: "₹320 - ₹360", 
-        eta: "7 min",
-        icon: "car-estate",
-        capacity: "6",
-        color: Colors.OLA_COLOR
-      },
-    ],
-    rapido: [
-      { 
-        id: "rapido-1", 
-        service: "Bike", 
-        rideType: "Quick rides", 
-        fare: "₹65 - ₹85", 
-        eta: "3 min",
-        icon: "motorcycle",
-        capacity: "1",
-        color: Colors.RAPIDO_COLOR
-      },
-      { 
-        id: "rapido-2", 
-        service: "Auto", 
-        rideType: "3-wheeler", 
-        fare: "₹120 - ₹145", 
-        eta: "5 min",
-        icon: "car-sport",
-        capacity: "3",
-        color: Colors.RAPIDO_COLOR
-      },
-      { 
-        id: "rapido-3", 
-        service: "Cab", 
-        rideType: "Comfortable rides", 
-        fare: "₹185 - ₹230", 
-        eta: "7 min",
-        icon: "car",
-        capacity: "4",
-        color: Colors.RAPIDO_COLOR
-      },
-    ]
-  };
+  // const mockFares = {
+  //   uber: [
+  //     { 
+  //       id: "uber-1", 
+  //       service: "UberGo", 
+  //       rideType: "Affordable rides", 
+  //       fare: "₹149 - ₹175", 
+  //       eta: "5 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //     { 
+  //       id: "uber-2", 
+  //       service: "Premier", 
+  //       rideType: "Comfortable rides", 
+  //       fare: "₹225 - ₹250", 
+  //       eta: "7 min",
+  //       icon: "car-side",
+  //       capacity: "4",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //     { 
+  //       id: "uber-3", 
+  //       service: "UberXL", 
+  //       rideType: "Premium rides", 
+  //       fare: "₹325 - ₹375", 
+  //       eta: "8 min",
+  //       icon: "caravan",
+  //       capacity: "6",
+  //       color: Colors.UBER_COLOR
+  //     },
+  //   ],
+  //   ola: [
+  //     { 
+  //       id: "ola-1", 
+  //       service: "Mini", 
+  //       rideType: "Economic rides", 
+  //       fare: "₹145 - ₹170", 
+  //       eta: "4 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //     { 
+  //       id: "ola-2", 
+  //       service: "Sedan", 
+  //       rideType: "Comfort rides", 
+  //       fare: "₹210 - ₹240", 
+  //       eta: "6 min",
+  //       icon: "car-sport",
+  //       capacity: "4",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //     { 
+  //       id: "ola-3", 
+  //       service: "Prime SUV", 
+  //       rideType: "Premium rides", 
+  //       fare: "₹320 - ₹360", 
+  //       eta: "7 min",
+  //       icon: "car-estate",
+  //       capacity: "6",
+  //       color: Colors.OLA_COLOR
+  //     },
+  //   ],
+  //   rapido: [
+  //     { 
+  //       id: "rapido-1", 
+  //       service: "Bike", 
+  //       rideType: "Quick rides", 
+  //       fare: "₹65 - ₹85", 
+  //       eta: "3 min",
+  //       icon: "motorcycle",
+  //       capacity: "1",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //     { 
+  //       id: "rapido-2", 
+  //       service: "Auto", 
+  //       rideType: "3-wheeler", 
+  //       fare: "₹120 - ₹145", 
+  //       eta: "5 min",
+  //       icon: "car-sport",
+  //       capacity: "3",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //     { 
+  //       id: "rapido-3", 
+  //       service: "Cab", 
+  //       rideType: "Comfortable rides", 
+  //       fare: "₹185 - ₹230", 
+  //       eta: "7 min",
+  //       icon: "car",
+  //       capacity: "4",
+  //       color: Colors.RAPIDO_COLOR
+  //     },
+  //   ]
+  // };
 
   // Get user's current location
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.log("Permission denied");
+  //       return;
+  //     }
+
+  //     let userLocation = await Location.getCurrentPositionAsync({});
+  //     setLocation(userLocation.coords);
+  //     setSource("Your Location"); // Default source is user's location
+  //     setRegion({
+  //       latitude: userLocation.coords.latitude,
+  //       longitude: userLocation.coords.longitude,
+  //       latitudeDelta: 0.05,
+  //       longitudeDelta: 0.05,
+  //     });
+  //   })();
+  // }, []);
+
+  const [pickupLocation, setPickupLocation] = useState(null);
+  const [dropLocation, setDropLocation] = useState(null);
+
+  const fetchPlaceDetails = async (placeId) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/details/json`,
+        {
+          params: {
+            place_id: placeId,
+            key: process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY,
+            fields: "geometry", // Specify that you need geometry data
+          },
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log("Error fetching place details:", error);
+      return null;
+    }
+  };
+  
+  
+  // Example: If you want to use current location as pickup
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -274,8 +322,15 @@ export default function HomeScreen() {
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       });
+      
+      // Optionally set the current location as the pickup location
+      setPickupLocation({
+        lat: userLocation.coords.latitude,
+        lng: userLocation.coords.longitude,
+      });
     })();
   }, []);
+
 
   // Fetch autocomplete places using Google API
   const fetchPlaces = async (input, isSourceField = false) => {
@@ -302,10 +357,24 @@ export default function HomeScreen() {
   };
 
   // Animation for cards
+  const [fares, setFares] = useState(null);
+  const handleFindFares = () => {
+    if (!pickupLocation || !dropLocation) {
+      console.log("Please select both a pickup and drop location");
+      return;
+    }
+    const calculatedFares = calculateFareEstimates(pickupLocation, dropLocation);
+    setFares(calculatedFares);
+    setSelectedFare(calculatedFares[selectedProvider][0]);
+    setShowFares(true);
+  };
+  
   useEffect(() => {
     if (showFares) {
       // Set the first fare as selected by default
-      setSelectedFare(mockFares[selectedProvider][0]);
+      if (fares) {
+        setSelectedFare(fares[selectedProvider][0]);
+      }      
     }
   }, [showFares, selectedProvider]);
 
@@ -319,20 +388,63 @@ export default function HomeScreen() {
 
   const switchProvider = (providerId) => {
     setSelectedProvider(providerId);
-    setSelectedFare(mockFares[providerId][0]);
+    // Use the fares state variable instead of calculatedFares
+    if (fares && fares[providerId]) {
+      setSelectedFare(fares[providerId][0]);
+    }
   };
-
+  
   const handleSourceSelection = (place) => {
     setSource(place.description);
     setSourcePlaces([]);
     setIsSourceSearch(false);
   };
 
-  const handleDestinationSelection = (place) => {
+  const handleDestinationSelection = async (place) => {
     setDestination(place.description);
     setPlaces([]);
+    
+    // Fetch detailed place data using the place_id
+    const details = await fetchPlaceDetails(place.place_id);
+    if (details && details.geometry && details.geometry.location) {
+      setDropLocation({
+        lat: details.geometry.location.lat,
+        lng: details.geometry.location.lng,
+      });
+    } else {
+      console.log("Could not fetch coordinates for the selected destination.");
+    }
   };
-
+  const handleBookRide = () => {
+    // Ensure that both pickupLocation and dropLocation are defined
+    if (!pickupLocation || !dropLocation) {
+      console.log("Missing pickup or drop location for booking ride");
+      return;
+    }
+    
+    let bookingUrl = "";
+    if (selectedProvider === "uber") {
+      // Example deep link for Uber; adjust parameters as needed
+      bookingUrl = `uber://?action=setPickup&pickup[latitude]=${pickupLocation.lat}&pickup[longitude]=${pickupLocation.lng}&dropoff[latitude]=${dropLocation.lat}&dropoff[longitude]=${dropLocation.lng}`;
+    } else if (selectedProvider === "ola") {
+      // Example deep link for Ola; the actual scheme might vary
+      bookingUrl = `ola://?pickup_lat=${pickupLocation.lat}&pickup_lng=${pickupLocation.lng}&drop_lat=${dropLocation.lat}&drop_lng=${dropLocation.lng}`;
+    } else if (selectedProvider === "rapido") {
+      // Example deep link for Rapido; update to the correct URL scheme if available
+      bookingUrl = `rapido://?pickup_lat=${pickupLocation.lat}&pickup_lng=${pickupLocation.lng}&drop_lat=${dropLocation.lat}&drop_lng=${dropLocation.lng}`;
+    }
+    
+    // Attempt to open the URL
+    if (bookingUrl) {
+      Linking.openURL(bookingUrl).catch((err) => {
+        console.error("Failed to open app: ", err);
+        // Optionally, show an alert or fallback behavior here.
+      });
+    }
+  };
+  
+  
+ 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.SECONDARY} />
@@ -341,7 +453,7 @@ export default function HomeScreen() {
       <MapView 
         style={styles.map} 
         region={region} 
-        provider={PROVIDER_GOOGLE}
+        //provider={PROVIDER_GOOGLE}
         customMapStyle={isBlackAndWhiteMap ? blackAndWhiteMapStyle : standardMapStyle}
       >
         {location && (
@@ -492,11 +604,12 @@ export default function HomeScreen() {
           {destination && !places.length && !sourcePlaces.length && (
             <TouchableOpacity 
               style={styles.submitButton} 
-              onPress={() => setShowFares(true)}
+              onPress={handleFindFares}
             >
               <Text style={styles.submitText}>Find Rides</Text>
             </TouchableOpacity>
-          )}
+                )}
+
         </View>
       )}
       
@@ -566,67 +679,75 @@ export default function HomeScreen() {
           </View>
           
           {/* Rides Carousel */}
-          <View style={styles.faresCarouselContainer}>
-            <Animated.FlatList
-              data={mockFares[selectedProvider]}
-              keyExtractor={(item) => item.id}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={CARD_WIDTH + 20}
-              snapToAlignment="center"
-              contentContainerStyle={styles.faresCarouselContent}
-              decelerationRate="fast"
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                { useNativeDriver: true }
-              )}
-              scrollEventThrottle={16}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.fareCard,
-                    selectedFare && selectedFare.id === item.id && {
-                      borderColor: item.color,
-                      borderWidth: 2,
-                    }
-                  ]}
-                  onPress={() => handleFareSelection(item)}
-                >
-                  <View style={styles.fareCardContent}>
-                    <View style={styles.fareCardLeft}>
-                      <View style={[
-                        styles.fareIconContainer,
-                        {backgroundColor: `${item.color}20`}
-                      ]}>
-                        <FontAwesome5 name={item.icon} size={24} color={item.color} />
-                      </View>
-                      <View style={styles.fareDetails}>
-                        <Text style={styles.fareService}>{item.service}</Text>
-                        <Text style={styles.fareType}>{item.rideType}</Text>
-                        <Text style={styles.fareEta}>{item.eta}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.farePrice}>
-                      <Text style={styles.farePriceText}>{item.fare}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+{/* Rides Carousel */}
+<View style={styles.faresCarouselContainer}>
+  <Animated.FlatList
+    data={fares ? fares[selectedProvider] : []}
+    keyExtractor={(item, index) => `${item.id}-${index}`}
+    horizontal
+    pagingEnabled
+    showsHorizontalScrollIndicator={false}
+    snapToInterval={CARD_WIDTH + 20}
+    snapToAlignment="center"
+    contentContainerStyle={styles.faresCarouselContent}
+    decelerationRate="fast"
+    onScroll={Animated.event(
+      [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+      { useNativeDriver: true }
+    )}
+    scrollEventThrottle={16}
+    renderItem={({ item }) => (
+      <TouchableOpacity
+        style={[
+          styles.fareCard,
+          selectedFare && selectedFare.id === item.id && {
+            borderColor: item.color,
+            borderWidth: 2,
+          },
+        ]}
+        onPress={() => handleFareSelection(item)}
+      >
+        <View style={styles.fareCardContent}>
+          <View style={styles.fareCardLeft}>
+            <View
+              style={[
+                styles.fareIconContainer,
+                { backgroundColor: `${item.color}20` },
+              ]}
+            >
+              <FontAwesome5 name={item.icon} size={24} color={item.color} />
+            </View>
+            <View style={styles.fareDetails}>
+              <Text style={styles.fareService}>{item.service}</Text>
+              <Text style={styles.fareDetailsText}>
+                {`${item.duration} min • ${item.distance} km`}
+              </Text>
+            </View>
           </View>
-          
+          <View style={styles.farePrice}>
+            <Text style={styles.farePriceText}>{item.fareRange}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )}
+  />
+</View>
+
+
           {/* Book Ride Button */}
-          <TouchableOpacity 
-            style={[
-              styles.bookButton,
-              {backgroundColor: providers.find(p => p.id === selectedProvider).color}
-            ]}
-          >
-            <Text style={styles.bookButtonText}>
-              Book {selectedFare ? selectedFare.service : 'Ride'} with {providers.find(p => p.id === selectedProvider).name}
-            </Text>
-          </TouchableOpacity>
+          {/* Book Ride Button */}
+        <TouchableOpacity 
+          style={[
+            styles.bookButton,
+            { backgroundColor: providers.find(p => p.id === selectedProvider).color }
+          ]}
+          onPress={handleBookRide}  // Added onPress handler here.
+        >
+          <Text style={styles.bookButtonText}>
+            Book {selectedFare ? selectedFare.service : 'Ride'} with {providers.find(p => p.id === selectedProvider).name}
+          </Text>
+        </TouchableOpacity>
+
           
           {/* Payment Method Selection */}
           <View style={styles.paymentMethod}>
@@ -1048,4 +1169,9 @@ const styles = StyleSheet.create({
     color: Colors.PRIMARY,
     marginHorizontal: 8,
   },
+  fareDetailsText: {
+    fontSize: 14,
+    color: Colors.GRAY,
+  },
+  
 });

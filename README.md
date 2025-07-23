@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+<h1 align="center">Fare Scout</h1>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<br/><br/>
 
-## Get started
+<a href="#">
+  <img src="https://img.shields.io/badge/ReactNative-0.73.6-blue.svg?style=flat-square" alt="rn version">
+</a>
 
-1. Install dependencies
+## Introduction
 
-   ```bash
-   npm install
-   ```
+Fare Scout - Compare and Choose the Best Ride
 
-2. Start the app
+Fare Scout is a smart fare comparison app that helps users quickly compare prices between different ride-hailing services such as Uber, Ola, and Rapido. Whether you're in a rush or just want to save money, Fare Scout gives you the power to make the best decision for your journey.
 
-   ```bash
-    npx expo start
-   ```
+## Requirements
 
-In the output, you'll find options to open the app in a
+- NPM (Node Package Manager)
+- React Native
+- Expo
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Features
 
-## Get a fresh project
+- Real-time fare comparison between Uber, Ola, and Rapido
+- Simple and clean UI to enter pickup and drop-off locations
+- Uses Google Maps API to fetch location data and route info
+- Instantly shows price estimates from different providers
+- Helps users choose the most affordable or fastest option
 
-When you're ready, run:
+## Setup
 
-```bash
-npm run reset-project
-```
+Install all packages
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+> npm install
 
-## Learn more
+Start the Expo server
 
-To learn more about developing your project with Expo, look at the following resources:
+> npx expo start
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
 
-Join our community of developers creating universal apps.
+## Tech Stack
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- React Native
+- Expo
+- Google Maps API
+- JavaScript
+
+
+
+---
+
